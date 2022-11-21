@@ -10,8 +10,9 @@
 图片悬浮窗：
 + ESC - 关闭
 + Ctrl+A - OCR文字识别
-+ Ctrl+X - 识别二维码/条形码
++ Ctrl+Q - 识别二维码/条形码
 + Ctrl+C - 复制图片
++ Ctrl+X - 复制图片并关闭悬浮窗（剪切）
 + Ctrl+S - 保存图片到文件
 + Ctrl+D - 用mspaint.exe打开
 + Ctrl+M - 编辑模式

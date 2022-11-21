@@ -145,6 +145,12 @@ namespace ScreenHelper
 			//	fixedTop = false;
 			//}
 		}
+		private Bitmap GetImage() {
+			using Bitmap imgCopy = new Bitmap(Width, Height);
+			using Graphics g = Graphics.FromImage(imgCopy);
+			DoDraw(g);
+			return ImageHelper.Truncate(imgCopy, new Rectangle(1, 1, Width - 2, Height - 2));
+		}
 		protected override async void OnKeyDown(KeyEventArgs e)
 		{
 			base.OnKeyDown(e);
@@ -157,8 +163,19 @@ namespace ScreenHelper
 				switch (e.KeyCode)
 				{
 					case Keys.C:
-						Clipboard.SetImage(pic);
-						break;
+						{
+							using Bitmap imgCopy = GetImage();
+							Clipboard.SetImage(imgCopy);
+							break;
+						}
+						
+					case Keys.X:
+						{
+							using Bitmap imgCopy = GetImage();
+							Clipboard.SetImage(imgCopy);
+							Close();
+							break;
+						}
 					case Keys.A:
 						var s = await OCRHelper.DoOCRAsync(pic);
 						var mr = MessageBox.Show(s, "OCR结果 点击确认复制到剪切板", MessageBoxButtons.OKCancel);
@@ -167,8 +184,7 @@ namespace ScreenHelper
 							Clipboard.SetText(s);
 						}
 						break;
-					case Keys.X:
-						//QRCodeReader reader=new QRCodeReader();
+					case Keys.Q:
 						BarcodeReader reader = new BarcodeReader();
 						var res = reader.DecodeMultiple(pic);
 						if (res != null)
@@ -229,11 +245,7 @@ namespace ScreenHelper
 									break;
 
 							}
-							//switch(Path.GetExtension(sfd.FileName))
-							using Bitmap imgCopy = new Bitmap(Width, Height);
-							using Graphics g = Graphics.FromImage(imgCopy);
-							DoDraw(g);
-							using Bitmap imgSave = ImageHelper.Truncate(imgCopy, new Rectangle(1, 1, Width - 2, Height - 2));
+							using Bitmap imgSave = GetImage();
 							imgSave.Save(sfd.FileName, format);
 							break;
 						}
