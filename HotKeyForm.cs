@@ -108,5 +108,10 @@ namespace ScreenHelper
 		{
 			Application.Exit();
 		}
+
+		private void toolStripMenuItem1_Click(object sender, EventArgs e)
+		{
+			MessageBox.Show($"Screenhelper\n°æ±¾:{Application.ProductVersion}", "¹ØÓÚ");
+		}
 	}
 }
