@@ -17,7 +17,7 @@ namespace ScreenHelper
 	{
 		static readonly string configURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/RemoteInfo.json";
 		static readonly string downloadURL = "https://github.com/rickwang2002/ScreenHelper/releases/download/v{0}/ScreenHelper.zip";
-		static readonly string updateCommand = $"cd \"{{0}}\"\n .\\update.ps1 -InstallDir \"{Application.StartupPath}\" -DeleteSelf $true";
+		static readonly string updateCommand = $"cd \"{{0}}\"\n .\\update.ps1 -InstallDir \"{Application.StartupPath}\" -DeleteSelf $true *>\"{{1}}\"";
 		public class RemoteInfo
 		{
 			public string NewestVersion { get; set; } = "";
@@ -54,12 +54,14 @@ namespace ScreenHelper
 			fs.Close();
 
 			string updateTempPath = Path.Combine(extractPath, "ScreenHelper");
+			string logFilePath = Path.Combine(downloadDir, "update.log");
 
 			using var proc = Process.Start(new ProcessStartInfo("powershell.exe")
 			{
 				RedirectStandardInput = true,
 			})!;
-			proc.StandardInput.WriteLine(string.Format(updateCommand, updateTempPath));
+			proc.StandardInput.WriteLine(string.Format(updateCommand, updateTempPath, logFilePath));
+			proc.Close();
 			Application.Exit();
 		}
 
