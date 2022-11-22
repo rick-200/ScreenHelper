@@ -10,6 +10,9 @@ namespace ScreenHelper
 {
 	internal class DownloadHelper
 	{
+		//由于众所周知的原因，在CN，github网络连接较差
+		//缩小DownloadBufferSize有助于确保重试机制的有效进行
+		static readonly int DownloadBufferSize = 1024 * 128;
 		public static async void DownloadEntirly(HttpClient client, Uri url, string path)
 		{
 			using var res = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
@@ -54,32 +57,34 @@ namespace ScreenHelper
 		}
 		private static async Task<(Uri url, long total, long pos)> EnsureTemp(HttpClient client, string path, Uri? url)
 		{
-			if (File.Exists(path))
+			string infoPath = GetInfoFilePath(path);
+			if (File.Exists(infoPath))
 			{
-				var res = GetDownloadInfoInternal(path);
+				var res = GetDownloadInfoInternal(infoPath);
 				if (url == null || url == res.url)
 				{
 					return res;
 				}
 			}
+			File.Delete(path);
 			if (url == null) throw new Exception("download can't be resumed, need url.");
 			long total = await GetRemoteFileLength(client, url);
 			if (total == -1) throw new Exception("download can't be resumed, server not support byteservice.");
-			WriteTemp(path, url, total, 0);
+			WriteTemp(infoPath, url, total, 0);
 			return (url, total, 0);
 		}
 		public static async Task DownloadPartial(HttpClient client, string path, Uri? url = null)
 		{
-			string tempFilePath = GetInfoFilePath(path);
-			var (furl, total, initPos) = await EnsureTemp(client, tempFilePath, url);
+			var (furl, total, initPos) = await EnsureTemp(client, path, url);
 			url = furl;
 			using var fs = File.OpenWrite(path);
 			byte[] buffer = new byte[1048576];
 			fs.Position = initPos;
+			string infoPath = GetInfoFilePath(path);
 			while (fs.Position < total)
 			{
 				var req = new HttpRequestMessage(HttpMethod.Get, url);
-				req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(fs.Position, fs.Position + 1048576 - 1 > total ? total : fs.Position + 1048576 - 1);
+				req.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(fs.Position, fs.Position + DownloadBufferSize - 1 > total ? total : fs.Position + DownloadBufferSize - 1);
 				using var res = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
 				if (res.StatusCode != System.Net.HttpStatusCode.PartialContent) throw new Exception("download can't be resumed, server not support byteservice.");
 				long from = res.Content.Headers.ContentRange?.From ?? throw new Exception("download can't be resumed, server not support byteservice.");
@@ -89,7 +94,7 @@ namespace ScreenHelper
 				using var s = await res.Content.ReadAsStreamAsync();
 				fs.Flush();
 				s.CopyTo(fs);
-				WriteTemp(tempFilePath, url, total, fs.Position);
+				WriteTemp(infoPath, url, total, fs.Position);
 			}
 		}
 	}

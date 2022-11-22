@@ -48,7 +48,7 @@ namespace ScreenHelper
 						);
 					}
 					catch (Exception) { }
-					await Task.Delay(60 * 1000);
+					await Task.Delay(1000);
 				}
 			});
 
