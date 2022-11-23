@@ -14,7 +14,7 @@ using System.Runtime.Versioning;
 
 [assembly: Guid("5bd32eba-7236-4a1f-883c-46f7dd52f9ac")]
 
-[assembly: AssemblyVersion("1.1.2.*")]
+[assembly: AssemblyVersion("1.1.3.*")]
 [assembly: AssemblyCompany("ScreenHelper")]
 [assembly: AssemblyConfiguration("Release")]
 //[assembly: AssemblyFileVersion("1.0.0")]
