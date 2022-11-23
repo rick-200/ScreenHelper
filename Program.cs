@@ -15,9 +15,6 @@ namespace ScreenHelper
 
 		static void Main()
 		{
-			using HttpClient client = new HttpClient();
-			string v = UpdateHelper.GetNewestVersion(client).Result;
-
 			//UpdateHelper.Update((_,_) => true, () => true).Wait();
 			bool createNew;
 			Mutex mutex = new Mutex(true, MutexName, out createNew);
@@ -50,6 +47,10 @@ namespace ScreenHelper
 							return res == DialogResult.OK;
 						}
 						);
+					}
+					catch (DownloadFileDamageException)
+					{
+						MessageBox.Show("更新失败，请手动更新。", "ScreenHelper");
 					}
 					catch (Exception) { }
 					await Task.Delay(1000);

@@ -13,6 +13,7 @@
     <ApplicationIcon>notify.ico</ApplicationIcon>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>    
+    <Deterministic>false</Deterministic>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Remove="app.manifest" />

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.IO.Compression;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -15,7 +16,9 @@ namespace ScreenHelper
 {
 	internal class UpdateHelper
 	{
-		static readonly string assemblyInfoURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/AssemblyInfo1.cs";
+		//当前三位版本号
+		public static string SelfVersion { get => Application.ProductVersion.Substring(0, Application.ProductVersion.LastIndexOf('.')); }
+		//static readonly string assemblyInfoURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/AssemblyInfo1.cs";
 		//static readonly string configURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/RemoteInfo.json";
 		static readonly string downloadURL = "https://github.com/rickwang2002/ScreenHelper/releases/download/v{0}/ScreenHelper.zip";
 		static readonly string updateCommand = $"cd \"{{0}}\"\n .\\update.ps1 -InstallDir \"{Application.StartupPath}\" -DeleteSelf $true *>\"{{1}}\"";
@@ -49,9 +52,17 @@ namespace ScreenHelper
 
 
 			using var fs = File.OpenRead(downloadFilePath);
-			using ZipArchive zip = new ZipArchive(fs);
-			zip.ExtractToDirectory(extractPath, true);
-			fs.Close();
+			try
+			{
+				using ZipArchive zip = new ZipArchive(fs);
+				zip.ExtractToDirectory(extractPath, true);
+				fs.Close();
+			}
+			catch (Exception ex)
+			{
+				throw new DownloadFileDamageException("", ex);
+			}
+
 
 			string updateTempPath = Path.Combine(extractPath, "ScreenHelper");
 			string logFilePath = Path.Combine(downloadDir, "update.log");
@@ -88,7 +99,7 @@ namespace ScreenHelper
 		//}
 		private static bool NeedUpdate(string newestVersionString)
 		{
-			var thisVersion = Application.ProductVersion.Split('-')[0].Trim().Split('.');
+			var thisVersion = SelfVersion.Split('-')[0].Trim().Split('.');
 			var newestVersion = newestVersionString.Split('-')[0].Trim().Split('.');
 			int len = thisVersion.Length < newestVersion.Length ? thisVersion.Length : newestVersion.Length;
 			for (int i = 0; i < len; i++)
@@ -119,5 +130,10 @@ namespace ScreenHelper
 		//	//Directory.CreateDirectory(storePath);
 		//	//zip.ExtractToDirectory(storePath);
 		//}
+	}
+	class DownloadFileDamageException : Exception
+	{
+		public DownloadFileDamageException(string msg) : base(msg) { }
+		public DownloadFileDamageException(string msg, Exception inner) : base(msg, inner) { }
 	}
 }
