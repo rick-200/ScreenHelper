@@ -63,7 +63,7 @@ namespace ScreenHelper
 			{
 				throw new DownloadFileDamageException("", ex);
 			}
-			MessageBox.Show("ExtractToDirectory");
+			//MessageBox.Show("ExtractToDirectory");
 			string updateTempPath = Path.Combine(extractPath, "ScreenHelper");
 			string logFilePath = Path.Combine(downloadDir, "update.log");
 
@@ -99,8 +99,13 @@ namespace ScreenHelper
 				if (p.Id == Process.GetCurrentProcess().Id) continue;
 				p.WaitForExit();
 			}
-			MessageBox.Show("Before Delete");
-			Directory.Delete(path, true);
+			//MessageBox.Show("Before Delete");
+			try
+			{
+				Directory.Delete(path, true);
+			}
+			catch(Exception) { }
+			//MessageBox.Show("After Delete");
 			CopyDirectory(Application.StartupPath, path);
 			Process.Start(Path.Combine(path, "ScreenHelper.exe"));
 			Application.Exit();

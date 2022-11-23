@@ -2,7 +2,7 @@
   "profiles": {
     "ScreenHelper": {
       "commandName": "Project",
-      "commandLineArgs": "update D:\\ScreenHelper\\"
+      //"commandLineArgs": "update D:\\ScreenHelper\\"
     }
   }
 }
