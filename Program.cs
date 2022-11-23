@@ -44,6 +44,7 @@ namespace ScreenHelper
 						(newestVersion) =>
 						{
 							var res = MessageBox.Show($"最新版本{newestVersion}，要更新吗?", "ScreenHelper", MessageBoxButtons.OKCancel);
+							if (res != DialogResult.OK) flag = false;
 							return res == DialogResult.OK;
 						}
 						);
@@ -52,8 +53,11 @@ namespace ScreenHelper
 					{
 						MessageBox.Show("更新失败，请手动更新。", "ScreenHelper");
 					}
-					catch (Exception) { }
-					await Task.Delay(1000);
+					catch (Exception)
+					{
+						await Task.Delay(1000);
+					}
+
 				}
 			});
 
