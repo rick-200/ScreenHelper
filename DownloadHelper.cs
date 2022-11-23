@@ -24,7 +24,7 @@ namespace ScreenHelper
 		{
 			using var request = new HttpRequestMessage(HttpMethod.Get, url);
 			request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(0, 0);
-			using var resRange = await client.SendAsync(request);
+			using var resRange = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 			if (resRange.StatusCode != System.Net.HttpStatusCode.PartialContent) return -1;
 			var headers = resRange.Content.Headers;
 			if (headers.ContentRange == null || !headers.ContentRange.Length.HasValue) return -1;
@@ -67,6 +67,7 @@ namespace ScreenHelper
 				}
 			}
 			File.Delete(path);
+			File.Delete(infoPath);
 			if (url == null) throw new Exception("download can't be resumed, need url.");
 			long total = await GetRemoteFileLength(client, url);
 			if (total == -1) throw new Exception("download can't be resumed, server not support byteservice.");
@@ -92,8 +93,8 @@ namespace ScreenHelper
 				long to = res.Content.Headers.ContentRange?.To ?? throw new Exception("download can't be resumed, server not support byteservice.");
 
 				using var s = await res.Content.ReadAsStreamAsync();
-				fs.Flush();
 				s.CopyTo(fs);
+				fs.Flush();
 				WriteTemp(infoPath, url, total, fs.Position);
 			}
 		}

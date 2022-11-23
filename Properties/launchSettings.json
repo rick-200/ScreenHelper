@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ScreenHelper": {
+      "commandName": "Project",
+      "commandLineArgs": "update D:\\ScreenHelper\\"
+    }
+  }
+}

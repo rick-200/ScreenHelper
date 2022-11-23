@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -21,7 +22,7 @@ namespace ScreenHelper
 		//static readonly string assemblyInfoURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/AssemblyInfo1.cs";
 		//static readonly string configURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/RemoteInfo.json";
 		static readonly string downloadURL = "https://github.com/rickwang2002/ScreenHelper/releases/download/v{0}/ScreenHelper.zip";
-		static readonly string updateCommand = $"cd \"{{0}}\"\n .\\update.ps1 -InstallDir \"{Application.StartupPath}\" -DeleteSelf $true *>\"{{1}}\"";
+		static readonly string updateCommand = $".\\update.ps1 -InstallDir \"{Application.StartupPath.TrimEnd('\\', '/')}\" -DeleteSelf $true *>\"{{0}}\"\n";
 		public class RemoteInfo
 		{
 			public string NewestVersion { get; set; } = "";
@@ -31,7 +32,7 @@ namespace ScreenHelper
 		public static async Task Update(VersionCallback versionCallback, UpdateCallback updateCallback)
 		{
 			using HttpClient client = new HttpClient();
-
+			client.Timeout = TimeSpan.FromSeconds(30);
 			string downloadDir = Path.Combine(Path.GetTempPath(), "ScreenHelperUpdate");
 			string downloadFilePath = Path.Combine(downloadDir, "ScreenHelper.zip");
 			Directory.CreateDirectory(downloadDir);
@@ -50,29 +51,32 @@ namespace ScreenHelper
 
 			if (!updateCallback(newestVersion)) return;
 
-
-			using var fs = File.OpenRead(downloadFilePath);
 			try
 			{
+				using var fs = File.OpenRead(downloadFilePath);
 				using ZipArchive zip = new ZipArchive(fs);
 				zip.ExtractToDirectory(extractPath, true);
 				fs.Close();
+				zip.Dispose();
 			}
 			catch (Exception ex)
 			{
 				throw new DownloadFileDamageException("", ex);
 			}
-
-
+			MessageBox.Show("ExtractToDirectory");
 			string updateTempPath = Path.Combine(extractPath, "ScreenHelper");
 			string logFilePath = Path.Combine(downloadDir, "update.log");
 
-			using var proc = Process.Start(new ProcessStartInfo("powershell.exe")
-			{
-				RedirectStandardInput = true,
-			})!;
-			proc.StandardInput.WriteLine(string.Format(updateCommand, updateTempPath, logFilePath));
-			proc.Close();
+			Process.Start(Path.Combine(updateTempPath, "ScreenHelper.exe"), $"update \"{Application.StartupPath.TrimEnd('\\', '/')}\"");
+			//using var proc = Process.Start(new ProcessStartInfo("powershell.exe")
+			//{
+			//	RedirectStandardInput = true,
+			//	WorkingDirectory = updateTempPath,
+			//})!;
+			//string command = string.Format(updateCommand, logFilePath);
+			//MessageBox.Show(command);
+			//proc.StandardInput.WriteLine(command);
+			//proc.StandardInput.Flush();
 			Application.Exit();
 		}
 
@@ -87,6 +91,35 @@ namespace ScreenHelper
 			return v;
 		}
 
+		public static void DoUpdateReplace(string path)
+		{
+			var ps = Process.GetProcessesByName("ScreenHelper");
+			foreach (var p in ps)
+			{
+				if (p.Id == Process.GetCurrentProcess().Id) continue;
+				p.WaitForExit();
+			}
+			MessageBox.Show("Before Delete");
+			Directory.Delete(path, true);
+			CopyDirectory(Application.StartupPath, path);
+			Process.Start(Path.Combine(path, "ScreenHelper.exe"));
+			Application.Exit();
+		}
+		private static void CopyDirectory(string src, string dst)
+		{
+			Directory.CreateDirectory(dst);
+			string[] files = Directory.GetFiles(src);
+			foreach (var f in files)
+			{
+				File.Copy(f, Path.Combine(dst, Path.GetFileName(f)), true);
+			}
+			string[] dirs = Directory.GetDirectories(src);
+			foreach (var d in dirs)
+			{
+				CopyDirectory(d, Path.Combine(dst, Path.GetFileName(d)!));
+			}
+		}
+
 		//private static async Task<RemoteInfo> GetRemoteInfo(HttpClient client)
 		//{
 		//	using var res = await client.GetAsync(configURL);
@@ -97,6 +130,7 @@ namespace ScreenHelper
 		//	if (obj == null) throw new Exception("obj==null");
 		//	return obj;
 		//}
+
 		private static bool NeedUpdate(string newestVersionString)
 		{
 			var thisVersion = SelfVersion.Split('-')[0].Trim().Split('.');
