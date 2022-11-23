@@ -19,7 +19,7 @@ namespace ScreenHelper
 			{
 				try
 				{
-					MessageBox.Show($"update {args[1]}");
+					//MessageBox.Show($"update {args[1]}");
 					UpdateHelper.DoUpdateReplace(args[1]);
 				}
 				catch(Exception ex)
