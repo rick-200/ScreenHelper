@@ -1,8 +1,8 @@
 
 
-
 namespace ScreenHelper
 {
+
 	internal static class Program
 	{
 		readonly static string MutexName = "Rick Screenhelper" + Application.ProductVersion;
@@ -12,6 +12,7 @@ namespace ScreenHelper
 		///  The main entry point for the application.
 		/// </summary>
 		[STAThread]
+
 		static void Main()
 		{
 			//UpdateHelper.Update((_,_) => true, () => true).Wait();
@@ -35,20 +36,28 @@ namespace ScreenHelper
 				{
 					try
 					{
-						await UpdateHelper.Update((needUpdate, info) =>
+						await UpdateHelper.Update((needUpdate, newestVersion) =>
 						{
 							if (!needUpdate) { flag = false; return false; }
 							return true;
 						},
-						(info) =>
+						(newestVersion) =>
 						{
-							var res = MessageBox.Show($"最新版本{info.NewestVersion}，要更新吗?", "ScreenHelper", MessageBoxButtons.OKCancel);
+							var res = MessageBox.Show($"最新版本{newestVersion}，要更新吗?", "ScreenHelper", MessageBoxButtons.OKCancel);
+							if (res != DialogResult.OK) flag = false;
 							return res == DialogResult.OK;
 						}
 						);
 					}
-					catch (Exception) { }
-					await Task.Delay(1000);
+					catch (DownloadFileDamageException)
+					{
+						MessageBox.Show("更新失败，请手动更新。", "ScreenHelper");
+					}
+					catch (Exception)
+					{
+						await Task.Delay(1000);
+					}
+
 				}
 			});
 
