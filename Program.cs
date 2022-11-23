@@ -5,7 +5,7 @@ namespace ScreenHelper
 
 	internal static class Program
 	{
-		readonly static string MutexName = "Rick Screenhelper" + Application.ProductVersion;
+		readonly static string MutexName = "Rick ScreenHelper Mutex";
 
 
 		/// <summary>
@@ -13,9 +13,22 @@ namespace ScreenHelper
 		/// </summary>
 		[STAThread]
 
-		static void Main()
+		static void Main(string[] args)
 		{
-			//UpdateHelper.Update((_,_) => true, () => true).Wait();
+			if (args.Length > 0 && args[0] == "update")
+			{
+				try
+				{
+					MessageBox.Show($"update {args[1]}");
+					UpdateHelper.DoUpdateReplace(args[1]);
+				}
+				catch(Exception ex)
+				{
+					MessageBox.Show($"update failed {ex.Message}");
+				}
+				
+				return;
+			}
 			bool createNew;
 			Mutex mutex = new Mutex(true, MutexName, out createNew);
 			if (!createNew)
@@ -48,6 +61,7 @@ namespace ScreenHelper
 							return res == DialogResult.OK;
 						}
 						);
+						flag = false;
 					}
 					catch (DownloadFileDamageException)
 					{
