@@ -1,8 +1,8 @@
 
 
-
 namespace ScreenHelper
 {
+
 	internal static class Program
 	{
 		readonly static string MutexName = "Rick Screenhelper" + Application.ProductVersion;
@@ -12,8 +12,12 @@ namespace ScreenHelper
 		///  The main entry point for the application.
 		/// </summary>
 		[STAThread]
+
 		static void Main()
 		{
+			using HttpClient client = new HttpClient();
+			string v = UpdateHelper.GetNewestVersion(client).Result;
+
 			//UpdateHelper.Update((_,_) => true, () => true).Wait();
 			bool createNew;
 			Mutex mutex = new Mutex(true, MutexName, out createNew);
@@ -35,14 +39,14 @@ namespace ScreenHelper
 				{
 					try
 					{
-						await UpdateHelper.Update((needUpdate, info) =>
+						await UpdateHelper.Update((needUpdate, newestVersion) =>
 						{
 							if (!needUpdate) { flag = false; return false; }
 							return true;
 						},
-						(info) =>
+						(newestVersion) =>
 						{
-							var res = MessageBox.Show($"最新版本{info.NewestVersion}，要更新吗?", "ScreenHelper", MessageBoxButtons.OKCancel);
+							var res = MessageBox.Show($"最新版本{newestVersion}，要更新吗?", "ScreenHelper", MessageBoxButtons.OKCancel);
 							return res == DialogResult.OK;
 						}
 						);

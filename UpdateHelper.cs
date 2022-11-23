@@ -15,15 +15,16 @@ namespace ScreenHelper
 {
 	internal class UpdateHelper
 	{
-		static readonly string configURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/RemoteInfo.json";
+		static readonly string assemblyInfoURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/AssemblyInfo1.cs";
+		//static readonly string configURL = "https://raw.githubusercontent.com/rickwang2002/ScreenHelper/dev/RemoteInfo.json";
 		static readonly string downloadURL = "https://github.com/rickwang2002/ScreenHelper/releases/download/v{0}/ScreenHelper.zip";
 		static readonly string updateCommand = $"cd \"{{0}}\"\n .\\update.ps1 -InstallDir \"{Application.StartupPath}\" -DeleteSelf $true *>\"{{1}}\"";
 		public class RemoteInfo
 		{
 			public string NewestVersion { get; set; } = "";
 		}
-		public delegate bool VersionCallback(bool needUpdate, RemoteInfo info);
-		public delegate bool UpdateCallback(RemoteInfo info);
+		public delegate bool VersionCallback(bool needUpdate, string newestVersion);
+		public delegate bool UpdateCallback(string newestVersion);
 		public static async Task Update(VersionCallback versionCallback, UpdateCallback updateCallback)
 		{
 			using HttpClient client = new HttpClient();
@@ -36,17 +37,16 @@ namespace ScreenHelper
 				Directory.Delete(extractPath, true);
 			Directory.CreateDirectory(extractPath);
 
-			var info = await GetRemoteInfo(client);
-			if (info.NewestVersion == null) throw new Exception("更新失败");
+			var newestVersion = await GetNewestVersion(client);
 
-			if (!versionCallback(NeedUpdate(info.NewestVersion), info)) return;
-			if (!NeedUpdate(info.NewestVersion)) return;
+			if (!versionCallback(NeedUpdate(newestVersion), newestVersion)) return;
+			if (!NeedUpdate(newestVersion)) return;
 
-			string downloadUrl = string.Format(downloadURL, info.NewestVersion);
+			string downloadUrl = string.Format(downloadURL, newestVersion);
 			await DownloadHelper.DownloadPartial(client, downloadFilePath, new Uri(downloadUrl));
 
-			if (!updateCallback(info)) return;
-			
+			if (!updateCallback(newestVersion)) return;
+
 
 			using var fs = File.OpenRead(downloadFilePath);
 			using ZipArchive zip = new ZipArchive(fs);
@@ -65,16 +65,27 @@ namespace ScreenHelper
 			Application.Exit();
 		}
 
-		private static async Task<RemoteInfo> GetRemoteInfo(HttpClient client)
+		public static async Task<string> GetNewestVersion(HttpClient client)
 		{
-			using var res = await client.GetAsync(configURL);
-			if (res == null) throw new Exception("res==null");
-			var content = await res.Content.ReadAsStringAsync();
-			if (content == null) throw new Exception("content==null");
-			RemoteInfo? obj = JsonSerializer.Deserialize<RemoteInfo>(content);
-			if (obj == null) throw new Exception("obj==null");
-			return obj;
+			var res = await client.GetAsync("https://github.com/rickwang2002/ScreenHelper/releases/latest", HttpCompletionOption.ResponseHeadersRead);
+			string[] seg = res.RequestMessage!.RequestUri!.Segments;
+			string v = seg[seg.Length - 1];
+			v = v.Trim('\\', '/');
+			v = v.TrimStart('v');
+			v = v.Substring(0, v.LastIndexOfAny("0123456789".ToCharArray()) + 1);
+			return v;
 		}
+
+		//private static async Task<RemoteInfo> GetRemoteInfo(HttpClient client)
+		//{
+		//	using var res = await client.GetAsync(configURL);
+		//	if (res == null) throw new Exception("res==null");
+		//	var content = await res.Content.ReadAsStringAsync();
+		//	if (content == null) throw new Exception("content==null");
+		//	RemoteInfo? obj = JsonSerializer.Deserialize<RemoteInfo>(content);
+		//	if (obj == null) throw new Exception("obj==null");
+		//	return obj;
+		//}
 		private static bool NeedUpdate(string newestVersionString)
 		{
 			var thisVersion = Application.ProductVersion.Split('-')[0].Trim().Split('.');
