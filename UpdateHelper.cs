@@ -104,11 +104,10 @@ namespace ScreenHelper
 			{
 				Directory.Delete(path, true);
 			}
-			catch(Exception) { }
+			catch (Exception) { }
 			//MessageBox.Show("After Delete");
 			CopyDirectory(Application.StartupPath, path);
-			Process.Start(Path.Combine(path, "ScreenHelper.exe"));
-			Application.Exit();
+			Process.Start(Path.Combine(path, "ScreenHelper.exe"), "after_update");
 		}
 		private static void CopyDirectory(string src, string dst)
 		{

@@ -22,7 +22,8 @@ namespace ScreenHelper
 						await UpdateHelper.Update((needUpdate, newestVersion) =>
 						{
 							if (!Properties.Settings.Default.AutoUpdate) return false;
-							if (!needUpdate) { 
+							if (!needUpdate)
+							{
 								flag = false;
 								Properties.Settings.Default.LastUpdateTime = DateTime.Now;
 								Properties.Settings.Default.Save();
@@ -59,19 +60,28 @@ namespace ScreenHelper
 		[STAThread]
 		static void Main(string[] args)
 		{
-			if (args.Length > 0 && args[0] == "update")
+			if (args.Length > 0)
 			{
-				try
+				if (args[0] == "update")
 				{
-					//MessageBox.Show($"update {args[1]}");
-					UpdateHelper.DoUpdateReplace(args[1]);
-				}
-				catch (Exception ex)
-				{
-					MessageBox.Show($"update failed {ex.Message}");
-				}
+					try
+					{
+						//MessageBox.Show($"update {args[1]}");
+						UpdateHelper.DoUpdateReplace(args[1]);
+					}
+					catch (Exception ex)
+					{
+						MessageBox.Show($"update failed {ex.Message}");
+					}
 
-				return;
+					return;
+				}
+				else if (args[0] == "after_update")
+				{
+					var res = MessageBox.Show("更新完成，点击确定查看更新说明");
+					if (res == DialogResult.OK)
+						System.Diagnostics.Process.Start("explorer.exe", "https://github.com/rickwang2002/ScreenHelper/releases/latest");
+				}
 			}
 			bool createNew;
 			Mutex mutex = new Mutex(true, MutexName, out createNew);
