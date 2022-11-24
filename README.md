@@ -20,4 +20,7 @@
 + Ctrl+D - 用mspaint.exe打开
 + Ctrl+M - 编辑模式
 
+图标托盘：
++ 右键弹出菜单，可关闭应用、更改设置、检查更新等
+
 ![example1](./example1.png)
