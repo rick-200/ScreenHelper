@@ -145,7 +145,8 @@ namespace ScreenHelper
 			//	fixedTop = false;
 			//}
 		}
-		private Bitmap GetImage() {
+		private Bitmap GetImage()
+		{
 			using Bitmap imgCopy = new Bitmap(Width, Height);
 			using Graphics g = Graphics.FromImage(imgCopy);
 			DoDraw(g);
@@ -168,7 +169,7 @@ namespace ScreenHelper
 							Clipboard.SetImage(imgCopy);
 							break;
 						}
-						
+
 					case Keys.X:
 						{
 							using Bitmap imgCopy = GetImage();
@@ -178,11 +179,12 @@ namespace ScreenHelper
 						}
 					case Keys.A:
 						var s = await OCRHelper.DoOCRAsync(pic);
-						var mr = MessageBox.Show(s, "OCR结果 点击确认复制到剪切板", MessageBoxButtons.OKCancel);
-						if (mr == DialogResult.OK)
-						{
-							Clipboard.SetText(s);
-						}
+						TextBoxDialog.Show(s, "OCR结果");
+						//var mr = MessageBox.Show(s, "OCR结果 点击确认复制到剪切板", MessageBoxButtons.OKCancel);
+						//if (mr == DialogResult.OK)
+						//{
+						//	Clipboard.SetText(s);
+						//}
 						break;
 					case Keys.Q:
 						BarcodeReader reader = new BarcodeReader();
@@ -192,9 +194,11 @@ namespace ScreenHelper
 							StringBuilder sb = new StringBuilder();
 							foreach (var r in res)
 							{
-								sb.Append("result:\n").Append(r.Text).Append("\n\n");
+								sb.Append("------------------------------\n")
+									.Append(r.Text).Append("\n\n");
 							}
-							MessageBox.Show(sb.ToString(), "二维码识别结果");
+							TextBoxDialog.Show(sb.ToString(), "二维码识别结果");
+							//MessageBox.Show(sb.ToString(), "二维码识别结果");
 						}
 						else
 						{
