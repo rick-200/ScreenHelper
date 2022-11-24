@@ -136,7 +136,7 @@ namespace ScreenHelper
 		//	return obj;
 		//}
 
-		private static bool NeedUpdate(string newestVersionString)
+		public static bool NeedUpdate(string newestVersionString)
 		{
 			var thisVersion = SelfVersion.Split('-')[0].Trim().Split('.');
 			var newestVersion = newestVersionString.Split('-')[0].Trim().Split('.');

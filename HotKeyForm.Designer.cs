@@ -33,9 +33,10 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HotKeyForm));
 			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mi_settings = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
+			this.mi_settings = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+			this.tsmi_checkUpdate = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -54,16 +55,10 @@
 			this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemExit,
             this.mi_settings,
-            this.toolStripMenuItem1});
+            this.toolStripMenuItem1,
+            this.tsmi_checkUpdate});
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
-			this.contextMenuStrip1.Size = new System.Drawing.Size(211, 104);
-			// 
-			// mi_settings
-			// 
-			this.mi_settings.Name = "mi_settings";
-			this.mi_settings.Size = new System.Drawing.Size(210, 24);
-			this.mi_settings.Text = "设置...";
-			this.mi_settings.Click += new System.EventHandler(this.mi_settings_Click);
+			this.contextMenuStrip1.Size = new System.Drawing.Size(211, 128);
 			// 
 			// menuItemExit
 			// 
@@ -72,12 +67,26 @@
 			this.menuItemExit.Text = "退出";
 			this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
 			// 
+			// mi_settings
+			// 
+			this.mi_settings.Name = "mi_settings";
+			this.mi_settings.Size = new System.Drawing.Size(210, 24);
+			this.mi_settings.Text = "设置...";
+			this.mi_settings.Click += new System.EventHandler(this.mi_settings_Click);
+			// 
 			// toolStripMenuItem1
 			// 
 			this.toolStripMenuItem1.Name = "toolStripMenuItem1";
 			this.toolStripMenuItem1.Size = new System.Drawing.Size(210, 24);
 			this.toolStripMenuItem1.Text = "关于...";
 			this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+			// 
+			// tsmi_checkUpdate
+			// 
+			this.tsmi_checkUpdate.Name = "tsmi_checkUpdate";
+			this.tsmi_checkUpdate.Size = new System.Drawing.Size(210, 24);
+			this.tsmi_checkUpdate.Text = "检查更新...";
+			this.tsmi_checkUpdate.Click += new System.EventHandler(this.tsmi_checkUpdate_Click);
 			// 
 			// HotKeyForm
 			// 
@@ -99,5 +108,6 @@
 		private ToolStripMenuItem menuItemExit;
 		private ToolStripMenuItem toolStripMenuItem1;
 		private ToolStripMenuItem mi_settings;
+		private ToolStripMenuItem tsmi_checkUpdate;
 	}
 }
