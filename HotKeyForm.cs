@@ -113,5 +113,10 @@ namespace ScreenHelper
 		{
 			MessageBox.Show($"Screenhelper\n°æ±¾:{Application.ProductVersion}", "¹ØÓÚ");
 		}
+
+		private void mi_settings_Click(object sender, EventArgs e)
+		{
+			Settings.ShowSettingsWindow();
+		}
 	}
 }
