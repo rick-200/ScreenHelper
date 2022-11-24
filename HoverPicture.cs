@@ -133,18 +133,11 @@ namespace ScreenHelper
 		protected override void OnDoubleClick(EventArgs e)
 		{
 			base.OnDoubleClick(e);
-			TopMost = !TopMost;
-			Invalidate();
-			//if (!TopMost)
-			//{
-			//	fixedTop = true;
-			// this.
-			//}
-			//else
-			//{
-			//	fixedTop = false;
-			//}
+			OperationTopMost();
 		}
+
+		
+
 		private Bitmap GetImage()
 		{
 			using Bitmap imgCopy = new Bitmap(Width, Height);
@@ -164,50 +157,20 @@ namespace ScreenHelper
 				switch (e.KeyCode)
 				{
 					case Keys.C:
-						{
-							using Bitmap imgCopy = GetImage();
-							Clipboard.SetImage(imgCopy);
-							break;
-						}
-
+						OperationCopy();
+						break;
 					case Keys.X:
-						{
-							using Bitmap imgCopy = GetImage();
-							Clipboard.SetImage(imgCopy);
-							Close();
-							break;
-						}
+						OperationCopy();
+						Close();
+						break;
 					case Keys.A:
-						var s = await OCRHelper.DoOCRAsync(pic);
-						TextBoxDialog.Show(s, "OCR结果");
-						//var mr = MessageBox.Show(s, "OCR结果 点击确认复制到剪切板", MessageBoxButtons.OKCancel);
-						//if (mr == DialogResult.OK)
-						//{
-						//	Clipboard.SetText(s);
-						//}
+						await OperationOCR();
 						break;
 					case Keys.Q:
-						BarcodeReader reader = new BarcodeReader();
-						var res = reader.DecodeMultiple(pic);
-						if (res != null)
-						{
-							StringBuilder sb = new StringBuilder();
-							foreach (var r in res)
-							{
-								sb.Append("------------------------------\n")
-									.Append(r.Text).Append("\n\n");
-							}
-							TextBoxDialog.Show(sb.ToString(), "二维码识别结果");
-							//MessageBox.Show(sb.ToString(), "二维码识别结果");
-						}
-						else
-						{
-							MessageBox.Show("图片不包含二维码！", "二维码识别结果", MessageBoxButtons.OK, MessageBoxIcon.Error);
-						}
+						OPerationBarcodeScan();
 						break;
 					case Keys.M:
-						modFlag = !modFlag;
-						Invalidate();
+						OperationEdit();
 						break;
 					case Keys.Z:
 						if (curPath != null)
@@ -229,33 +192,109 @@ namespace ScreenHelper
 						break;
 					case Keys.S:
 						{
-							SaveFileDialog sfd = new SaveFileDialog();
-							sfd.Filter = "png|*.png|jpg|*.jpg|bmp|*.bmp";
-							sfd.FileName = Path.GetRandomFileName() + ".png";
-							var dr = sfd.ShowDialog();
-							if (dr != DialogResult.OK) break;
-							ImageFormat format;
-							switch (Path.GetExtension(sfd.FileName))
-							{
-								default:
-								case ".png":
-									format = ImageFormat.Png;
-									break;
-								case ".jpg":
-									format = ImageFormat.Jpeg;
-									break;
-								case ".bmp":
-									format = ImageFormat.Bmp;
-									break;
-
-							}
-							using Bitmap imgSave = GetImage();
-							imgSave.Save(sfd.FileName, format);
+							OperationSave();
 							break;
 						}
 
 				}
 			}
+		}
+		private void OperationTopMost()
+		{
+			TopMost = !TopMost;
+			Invalidate();
+		}
+		private void OperationEdit()
+		{
+			modFlag = !modFlag;
+			Invalidate();
+		}
+
+		private void OperationCopy()
+		{
+			using Bitmap imgCopy = GetImage();
+			Clipboard.SetImage(imgCopy);
+		}
+
+		private async Task OperationOCR()
+		{
+			var s = await OCRHelper.DoOCRAsync(pic);
+			TextBoxDialog.Show(s, "OCR结果");
+		}
+
+		private void OPerationBarcodeScan()
+		{
+			BarcodeReader reader = new BarcodeReader();
+			var res = reader.DecodeMultiple(pic);
+			if (res != null)
+			{
+				StringBuilder sb = new StringBuilder();
+				foreach (var r in res)
+				{
+					sb.Append("------------------------------\n")
+						.Append(r.Text).Append("\n\n");
+				}
+				TextBoxDialog.Show(sb.ToString(), "二维码识别结果");
+				//MessageBox.Show(sb.ToString(), "二维码识别结果");
+			}
+			else
+			{
+				MessageBox.Show("图片不包含二维码！", "二维码识别结果", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
+		private void OperationSave()
+		{
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.Filter = "png|*.png|jpg|*.jpg|bmp|*.bmp";
+			sfd.FileName = Path.GetRandomFileName() + ".png";
+			var dr = sfd.ShowDialog();
+			if (dr != DialogResult.OK) return;
+			ImageFormat format;
+			switch (Path.GetExtension(sfd.FileName))
+			{
+				default:
+				case ".png":
+					format = ImageFormat.Png;
+					break;
+				case ".jpg":
+					format = ImageFormat.Jpeg;
+					break;
+				case ".bmp":
+					format = ImageFormat.Bmp;
+					break;
+
+			}
+			using Bitmap imgSave = GetImage();
+			imgSave.Save(sfd.FileName, format);
+		}
+
+		private void tsmi_copy_Click(object sender, EventArgs e)
+		{
+			OperationCopy();
+		}
+		private async void tsmi_ocr_Click(object sender, EventArgs e)
+		{
+			await OperationOCR();
+		}
+
+		private void tsmi_barcode_Click(object sender, EventArgs e)
+		{
+			OPerationBarcodeScan();
+		}
+
+		private void tsmi_edit_Click(object sender, EventArgs e)
+		{
+			OperationEdit();
+		}
+
+		private void tsmi_save_Click(object sender, EventArgs e)
+		{
+			OperationSave();
+		}
+
+		private void tsmi_topmost_Click(object sender, EventArgs e)
+		{
+			OperationTopMost();
 		}
 	}
 }
