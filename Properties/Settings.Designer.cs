@@ -46,5 +46,16 @@ namespace ScreenHelper.Properties {
                 this["AutoUpdate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.DateTime LastUpdateTime {
+            get {
+                return ((global::System.DateTime)(this["LastUpdateTime"]));
+            }
+            set {
+                this["LastUpdateTime"] = value;
+            }
+        }
     }
 }

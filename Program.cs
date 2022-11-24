@@ -7,8 +7,11 @@ namespace ScreenHelper
 	{
 		readonly static string MutexName = "Rick ScreenHelper Mutex";
 
-		static void StartUpdateThread() {
+		static void StartUpdateThread()
+		{
 			if (!Properties.Settings.Default.AutoUpdate) return;
+			if ((DateTime.Now - Properties.Settings.Default.LastUpdateTime) < TimeSpan.FromDays(7))
+				return;
 			Task.Run(async () =>
 			{
 				bool flag = true;
@@ -19,7 +22,12 @@ namespace ScreenHelper
 						await UpdateHelper.Update((needUpdate, newestVersion) =>
 						{
 							if (!Properties.Settings.Default.AutoUpdate) return false;
-							if (!needUpdate) { flag = false; return false; }
+							if (!needUpdate) { 
+								flag = false;
+								Properties.Settings.Default.LastUpdateTime = DateTime.Now;
+								Properties.Settings.Default.Save();
+								return false;
+							}
 							return true;
 						},
 						(newestVersion) =>
@@ -79,7 +87,7 @@ namespace ScreenHelper
 			Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
 
 			StartUpdateThread();
-			
+
 			try
 			{
 				AutoRunHelper.RegisterAutoRun(Properties.Settings.Default.AutoRun);
