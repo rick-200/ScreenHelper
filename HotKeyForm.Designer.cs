@@ -33,8 +33,8 @@
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HotKeyForm));
 			this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-			this.mi_settings = new System.Windows.Forms.ToolStripMenuItem();
 			this.menuItemExit = new System.Windows.Forms.ToolStripMenuItem();
+			this.mi_settings = new System.Windows.Forms.ToolStripMenuItem();
 			this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
 			this.contextMenuStrip1.SuspendLayout();
 			this.SuspendLayout();
@@ -58,19 +58,19 @@
 			this.contextMenuStrip1.Name = "contextMenuStrip1";
 			this.contextMenuStrip1.Size = new System.Drawing.Size(211, 104);
 			// 
-			// mi_settings
-			// 
-			this.mi_settings.Name = "mi_settings";
-			this.mi_settings.Size = new System.Drawing.Size(210, 24);
-			this.mi_settings.Text = "设置...";
-			this.mi_settings.Click += new System.EventHandler(this.mi_settings_Click);
-			// 
 			// menuItemExit
 			// 
 			this.menuItemExit.Name = "menuItemExit";
 			this.menuItemExit.Size = new System.Drawing.Size(210, 24);
 			this.menuItemExit.Text = "退出";
 			this.menuItemExit.Click += new System.EventHandler(this.menuItemExit_Click);
+			// 
+			// mi_settings
+			// 
+			this.mi_settings.Name = "mi_settings";
+			this.mi_settings.Size = new System.Drawing.Size(210, 24);
+			this.mi_settings.Text = "设置...";
+			this.mi_settings.Click += new System.EventHandler(this.mi_settings_Click);
 			// 
 			// toolStripMenuItem1
 			// 

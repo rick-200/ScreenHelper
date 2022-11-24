@@ -104,11 +104,10 @@ namespace ScreenHelper
 			{
 				Directory.Delete(path, true);
 			}
-			catch(Exception) { }
+			catch (Exception) { }
 			//MessageBox.Show("After Delete");
 			CopyDirectory(Application.StartupPath, path);
-			Process.Start(Path.Combine(path, "ScreenHelper.exe"));
-			Application.Exit();
+			Process.Start(Path.Combine(path, "ScreenHelper.exe"), "after_update");
 		}
 		private static void CopyDirectory(string src, string dst)
 		{
@@ -136,7 +135,7 @@ namespace ScreenHelper
 		//	return obj;
 		//}
 
-		private static bool NeedUpdate(string newestVersionString)
+		public static bool NeedUpdate(string newestVersionString)
 		{
 			var thisVersion = SelfVersion.Split('-')[0].Trim().Split('.');
 			var newestVersion = newestVersionString.Split('-')[0].Trim().Split('.');

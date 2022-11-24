@@ -111,12 +111,47 @@ namespace ScreenHelper
 
 		private void toolStripMenuItem1_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show($"Screenhelper\n版本:{Application.ProductVersion}", "关于");
+			AboutDialog.Show();
 		}
 
 		private void mi_settings_Click(object sender, EventArgs e)
 		{
 			Settings.ShowSettingsWindow();
 		}
+
+		//	private async void tsmi_checkUpdate_Click(object sender, EventArgs e)
+		//	{
+		//		using HttpClient client = new HttpClient();
+		//		client.Timeout = TimeSpan.FromSeconds(30);
+		//		try
+		//		{
+		//			string newestVersion = await UpdateHelper.GetNewestVersion(client);
+		//			if (UpdateHelper.NeedUpdate(newestVersion))
+		//			{
+		//				string tip = Properties.Settings.Default.AutoUpdate ?
+		//					"自动更新已开启，会自动在后台下载新版本，完成后将提示更新" :
+		//					"自动更新已关闭，需手动更新";
+		//				var res = MessageBox.Show(
+		//					$"发现新版本: {newestVersion}\n" +
+		//					$"当前版本{Application.ProductVersion}\n" +
+		//					$"{tip}\n" +
+		//					$"点击'确定'前往网站下载最新版", "ScreenHelper", MessageBoxButtons.OKCancel);
+		//				if (res == DialogResult.OK)
+		//				{
+		//					System.Diagnostics.Process.Start("explorer.exe", "https://github.com/rickwang2002/ScreenHelper/releases/latest");
+		//				}
+		//			}
+		//			else
+		//			{
+		//				MessageBox.Show($"已经是最新版本", "ScreenHelper");
+		//			}
+		//		}
+		//		catch (Exception ex)
+		//		{
+		//			MessageBox.Show($"检查更新失败: {ex.Message}", "ScreenHelper");
+		//		}
+
+
+		//	}
 	}
 }
